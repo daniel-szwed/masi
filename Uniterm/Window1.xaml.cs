@@ -29,7 +29,6 @@ namespace Uniterm
             InitializeComponent();
         }
 
-        DataBase db;
         bool nowy = false, modified = false;
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
@@ -57,7 +56,6 @@ namespace Uniterm
             cbfSize.SelectedIndex = 4;
 
 
-            db = new DataBase();
           //  DataTable dt = db.CreateDataTable("select name from uniterms;");
 
             lbUniterms.SelectionChanged -= ehlbUNitermsSelectionChanged;
@@ -181,49 +179,7 @@ namespace Uniterm
 
         private void MenuItem_Click_1(object sender, RoutedEventArgs e)
         {
-           // Int32 fontsize_1 = (Int32)MyDrawing.fontsize;
-            try
-            {
-
-                string sql = "insert into uniterms values('{0}','{1}','{2}','{3}','{4}','{5}','{6}',''{7}','{8}',{9},'{10}','{11}');";
-                if (nowy)
-                {
-                    sql = "insert into uniterms values('" + tbName.Text + "','" + tbDescription.Text + "','" +
-                        MyDrawing.sA + "','" + MyDrawing.sB + "','" + MyDrawing.sOp + "','" + MyDrawing.eA + "','" +
-                        MyDrawing.eB + "','" + MyDrawing.eC + "'," + (Int32) MyDrawing.fontsize  + ",'" + MyDrawing.fontFamily + "','" + MyDrawing.oper + "');";
-                }
-                else
-                {
-                    
-                    sql = "UPDATE uniterms SET " +
-      "description = '" + tbDescription.Text +
-      "',sA = '" + MyDrawing.sA +
-      "',sB ='" + MyDrawing.sB +
-      "',sOp ='" + MyDrawing.sOp +
-      "',eA = '" + MyDrawing.eA +
-      "',eB = '" + MyDrawing.eB +
-      "',eC = '" + MyDrawing.eC +
-      "',fontSize =" + (Int32)MyDrawing.fontsize +
-      ",fontFamily = '" + MyDrawing.fontFamily +
-      "',switched ='" + MyDrawing.oper +
-        "' WHERE name ='" + tbName.Text + "';"; //C:\SLOWIK\Uniterm\Uniterm\ClassDiagram2.cd
-                }
-
-                db.RunQuery(sql);
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Wystąpił błąd", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-
-            Window_Loaded(sender, e);
-
-            lbUniterms.SelectionChanged -= ehlbUNitermsSelectionChanged;
-            lbUniterms.SelectedValue = tbName.Text;
-            lbUniterms.SelectionChanged += ehlbUNitermsSelectionChanged;
-
-          
+           // probably save button          
         }
 
         private bool CheckSave()
@@ -257,31 +213,32 @@ namespace Uniterm
 
         private void ehlbUNitermsSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            // probably open
             if (CheckSave())
             {
                 DataRow dr;
                 try
                 {
-                    dr = db.CreateDataRow(String.Format("select * from uniterms where name = '{0}';", lbUniterms.SelectedItem.ToString()));
+                    //dr = db.CreateDataRow(String.Format("select * from uniterms where name = '{0}';", lbUniterms.SelectedItem.ToString()));
 
 
-                    MyDrawing.eA = (string)dr["eA"];
-                    MyDrawing.eB = (string)dr["eB"];
-                    MyDrawing.eC = (string)dr["eC"];
+                    //MyDrawing.eA = (string)dr["eA"];
+                    //MyDrawing.eB = (string)dr["eB"];
+                    //MyDrawing.eC = (string)dr["eC"];
 
-                    MyDrawing.sA = (string)dr["sA"];
-                    MyDrawing.sB = (string)dr["sB"];
-                    MyDrawing.sOp = (string)dr["sOp"];
+                    //MyDrawing.sA = (string)dr["sA"];
+                    //MyDrawing.sB = (string)dr["sB"];
+                    //MyDrawing.sOp = (string)dr["sOp"];
 
-                    MyDrawing.fontFamily = new FontFamily((string)dr["fontFamily"]);
+                    //MyDrawing.fontFamily = new FontFamily((string)dr["fontFamily"]);
                     
-                    MyDrawing.fontsize = (Int32)dr["fontSize"];
+                    //MyDrawing.fontsize = (Int32)dr["fontSize"];
 
-                    MyDrawing.oper = ((string)dr["switched"])[0]; ;
+                    //MyDrawing.oper = ((string)dr["switched"])[0]; ;
 
 
-                    tbName.Text = (string)dr["name"];
-                    tbDescription.Text = (string)dr["description"];
+                    //tbName.Text = (string)dr["name"];
+                    //tbDescription.Text = (string)dr["description"];
 
                     cbFonts.SelectedValue = MyDrawing.fontFamily;
                     cbfSize.SelectedValue = (Int32)MyDrawing.fontsize;

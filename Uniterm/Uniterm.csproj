@@ -139,7 +139,6 @@
     <Compile Include="AddUniterm.xaml.cs">
       <DependentUpon>AddUniterm.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DataBase.cs" />
     <Compile Include="MyCanvas.cs" />
     <Compile Include="MyDrawing.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -160,48 +159,12 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Window1_Button_Click.sequencediagram.layout">
-      <DependentUpon>Window1_Button_Click.sequencediagram</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Window1_ehCBFontsChanged.sequencediagram.layout">
-      <DependentUpon>Window1_ehCBFontsChanged.sequencediagram</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Window1_ehCBFontsChanged_1.sequencediagram.layout">
-      <DependentUpon>Window1_ehCBFontsChanged_1.sequencediagram</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Window1_ehCBFontsChanged_3.sequencediagram.layout">
-      <DependentUpon>Window1_ehCBFontsChanged_3.sequencediagram</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Window1_ehcbfSizeChanged.sequencediagram.layout">
-      <DependentUpon>Window1_ehcbfSizeChanged.sequencediagram</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Window1_ehlbUNitermsSelectionChanged.sequencediagram.layout">
-      <DependentUpon>Window1_ehlbUNitermsSelectionChanged.sequencediagram</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Window1_Window1.sequencediagram.layout">
-      <DependentUpon>Window1_Window1.sequencediagram</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Window1_Window_Loaded_2.sequencediagram.layout">
-      <DependentUpon>Window1_Window_Loaded_2.sequencediagram</DependentUpon>
-    </EmbeddedResource>
     <None Include="app.config" />
-    <None Include="ClassDiagram1.cd" />
-    <None Include="ClassDiagram3.cd" />
-    <None Include="ClassDiagram4.cd" />
-    <None Include="ClassDiagram5.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
-    <None Include="Window1_Button_Click.sequencediagram" />
-    <None Include="Window1_ehCBFontsChanged.sequencediagram" />
-    <None Include="Window1_ehCBFontsChanged_1.sequencediagram" />
-    <None Include="Window1_ehCBFontsChanged_3.sequencediagram" />
-    <None Include="Window1_ehcbfSizeChanged.sequencediagram" />
-    <None Include="Window1_ehlbUNitermsSelectionChanged.sequencediagram" />
-    <None Include="Window1_Window1.sequencediagram" />
-    <None Include="Window1_Window_Loaded_2.sequencediagram" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
