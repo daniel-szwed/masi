@@ -1,0 +1,317 @@
+﻿using Application.Commands;
+using Application.Queries;
+using Domain;
+using Infrastructure;
+using MediatR;
+using System;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
+
+namespace Presentation
+{
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        public MainWindow()
+        {
+            InitializeComponent();
+        }
+
+        bool nowy = false, modified = false;
+        private void btnAdd_Click(object sender, RoutedEventArgs e)
+        {
+            cDrawing.ClearAll();
+        }
+
+        private void ehMouseDown(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            foreach (FontFamily f in System.Windows.Media.Fonts.SystemFontFamilies)
+            {
+                cbFonts.Items.Add(f);
+            }
+            if (cbFonts.Items.Count > 0)
+                cbFonts.SelectedIndex = 0;
+
+            for (int i = 8; i <= 40; i++)
+            {
+                cbfSize.Items.Add(i);
+            }
+            cbfSize.SelectedIndex = 4;
+
+
+            //  DataTable dt = db.CreateDataTable("select name from uniterms;");
+
+            lbUniterms.SelectionChanged -= ehlbUNitermsSelectionChanged;
+            lbUniterms.Items.Clear();
+
+
+            /*  foreach (DataRow dr in dt.Rows)
+              {
+                  lbUniterms.Items.Add(dr["name"]);
+              }*/
+            modified = false;
+            nowy = false;
+            lbUniterms.SelectionChanged += ehlbUNitermsSelectionChanged;
+
+            var mediator = AppServiceProvider.Instance
+                .GetService<IMediator>();
+            var uniterms = mediator.Send(new GetAllDataQuery()).GetAwaiter().GetResult();
+            if (uniterms.Any())
+            {
+                var uniterm = uniterms.OrderByDescending(x => x.SaveAt).First();
+                MyDrawing.eA = uniterm.Elimination.A;
+                MyDrawing.eB = uniterm.Elimination.B;
+                MyDrawing.eC = uniterm.Elimination.C;
+                MyDrawing.sA = uniterm.Sequence.A;
+                MyDrawing.sB = uniterm.Sequence.B;
+                MyDrawing.sOp = uniterm.Sequence.Operator;
+
+                btnRedraw_Click(sender, e);
+            }
+        }
+
+        private void ehCBFontsChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                MyDrawing.fontFamily = new FontFamily(e.AddedItems[0].ToString());
+                modified = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+        }
+
+        private void ehcbfSizeChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                MyDrawing.fontsize = (int)e.AddedItems[0];
+                modified = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            AddUniterm au = new AddUniterm();
+
+            au.ShowDialog();
+
+            if (au.tbA.Text.Length > 250 || au.tbB.Text.Length > 250)
+            {
+                MessageBox.Show("Zbyt długi tekst!\n Maksymalna długość tekstu to 250 znaków!", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            MyDrawing.sA = au.tbA.Text;
+            MyDrawing.sB = au.tbB.Text;
+
+            MyDrawing.sOp = au.rbSr.IsChecked == true ? " ; " : " , ";
+
+            btnRedraw_Click(sender, e);
+
+            modified = true;
+
+        }
+
+        private void btnAddEl_Click(object sender, RoutedEventArgs e)
+        {
+            AddElem ae = new AddElem();
+
+            ae.ShowDialog();
+            if (ae.tbA.Text.Length > 250 || ae.tbB.Text.Length > 250 || ae.tbC.Text.Length > 250)
+            {
+                MessageBox.Show("Zbyt długi tekst!\n Maksymalna długość tekstu to 250 znaków!", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            MyDrawing.eA = ae.tbA.Text;
+            MyDrawing.eB = ae.tbB.Text;
+            MyDrawing.eC = ae.tbC.Text;
+
+            btnRedraw_Click(sender, e);
+            modified = true;
+        }
+
+        private void btnRedraw_Click(object sender, RoutedEventArgs e)
+        {
+            cDrawing.ClearAll();
+
+            DrawingVisual dv = new DrawingVisual();
+            using (DrawingContext dc = dv.RenderOpen())
+            {
+                MyDrawing md = new MyDrawing(dc);
+
+                md.Redraw();
+                dc.Close();
+            }
+            cDrawing.AddElement(dv);
+
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+
+            char operacja = 'X';
+
+            switch (MessageBox.Show("Co zamienić?\n [Tak]==A, [Nie]==B", "Zamień", MessageBoxButton.YesNoCancel, MessageBoxImage.Question))
+            {
+                case MessageBoxResult.Yes:
+                    operacja = 'A';
+
+                    break;
+                case MessageBoxResult.No:
+                    operacja = 'B';
+
+                    break;
+                case MessageBoxResult.Cancel: return;
+            }
+
+            cDrawing.ClearAll();
+            MyDrawing.oper = operacja;
+            btnRedraw_Click(sender, e);
+            modified = true;
+        }
+
+        // SAVE Button
+        private void MenuItem_Click_1(object sender, RoutedEventArgs e)
+        {
+            var data = new Data()
+            {
+                Elimination = new Elimination()
+                {
+                    A = MyDrawing.eA,
+                    B = MyDrawing.eB,
+                    C = MyDrawing.eC
+                },
+                Sequence = new Sequence()
+                {
+                    A = MyDrawing.sA,
+                    B = MyDrawing.sB,
+                    Operator = MyDrawing.sOp
+                }
+            };
+            var mediator = AppServiceProvider.Instance
+                .GetService<IMediator>();
+            mediator.Send(new SaveDataCommand(data));
+        }
+
+        private bool CheckSave()
+        {
+
+            if (!modified)
+                return true;
+            else
+            {
+                switch (MessageBox.Show("Chcesz zapisać?", "Zapis", MessageBoxButton.YesNoCancel, MessageBoxImage.Question))
+                {
+                    case MessageBoxResult.Yes:
+                        {
+                            MenuItem_Click_1(null, null);
+                            modified = false;
+                            nowy = false;
+                            return true;
+                        }
+                    case MessageBoxResult.No:
+                        {
+                            modified = false;
+                            nowy = false;
+                            return true;
+                        }
+                    case MessageBoxResult.Cancel: return false;
+                    default: return false;
+                }
+            }
+
+        }
+
+        private void ehlbUNitermsSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // probably open
+            if (CheckSave())
+            {
+                //DataRow dr;
+                try
+                {
+                    //dr = db.CreateDataRow(String.Format("select * from uniterms where name = '{0}';", lbUniterms.SelectedItem.ToString()));
+
+
+                    //MyDrawing.eA = (string)dr["eA"];
+                    //MyDrawing.eB = (string)dr["eB"];
+                    //MyDrawing.eC = (string)dr["eC"];
+
+                    //MyDrawing.sA = (string)dr["sA"];
+                    //MyDrawing.sB = (string)dr["sB"];
+                    //MyDrawing.sOp = (string)dr["sOp"];
+
+                    //MyDrawing.fontFamily = new FontFamily((string)dr["fontFamily"]);
+
+                    //MyDrawing.fontsize = (Int32)dr["fontSize"];
+
+                    //MyDrawing.oper = ((string)dr["switched"])[0]; ;
+
+
+                    //tbName.Text = (string)dr["name"];
+                    //tbDescription.Text = (string)dr["description"];
+
+                    cbFonts.SelectedValue = MyDrawing.fontFamily;
+                    cbfSize.SelectedValue = (Int32)MyDrawing.fontsize;
+
+                    cDrawing.ClearAll();
+
+
+
+                    DrawingVisual dv = new DrawingVisual();
+                    cDrawing.Width = 5000;
+                    cDrawing.Height = 5000;
+
+                    btnRedraw_Click(sender, e);
+                    nowy = false;
+                    modified = false;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+
+            }
+        }
+
+        private void ehNowyClick(object sender, RoutedEventArgs e)
+        {
+            MyDrawing.ClearAll();
+            cDrawing.ClearAll();
+            nowy = true;
+            modified = false;
+        }
+
+        private void tbDescKeyUP(object sender, KeyEventArgs e)
+        {
+            modified = true;
+        }
+
+        private void HorScroll_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            TranslateTransform tt = new TranslateTransform();
+            tt.X = -HorScroll.Value;
+            tt.Y = -VerScroll.Value;
+
+            cDrawing.RenderTransform = tt;
+        }
+    }
+}
