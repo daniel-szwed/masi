@@ -20,6 +20,7 @@ namespace Presentation
             var provider = AppServiceProvider.Instance;
             provider.ServiceCollection
                 .AddDbContext<AppDbContext>()
+                .AddLogging()
                 //.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies())
                 .AddMediatR(applicationAssembly)
                 .AddSingleton<IUnitOfWork, UnitOfWork>();

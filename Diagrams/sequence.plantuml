@@ -1,0 +1,13 @@
+@startuml
+Presentation.Window_Loaded -> Application.MediatR: GetAllDataQuery
+
+Application.MediatR -> Infrastructure.EFCore: DbContext.DbSet.ToListAsync()
+
+Infrastructure.EFCore -> SQLite: SQL Query
+Infrastructure.EFCore <-- SQLite: Provider response
+
+Application.MediatR <-- Infrastructure.EFCore: IEnumerable<EntityBase>
+
+Presentation.Window_Loaded <-- Application.MediatR: Data Response
+
+@enduml
